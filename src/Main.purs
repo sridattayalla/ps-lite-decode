@@ -81,3 +81,16 @@ val' =
         Val       x -> show x
 
 main = log $ ""--val
+
+
+-----------------------
+class Convert a b | a -> b where
+    convert :: a -> b
+
+instance convertStringInt :: Convert String Int where
+    convert _ = 0
+
+instance convertNumber :: Convert Int Number where
+    convert _ = 0.0
+
+temp = convert ""

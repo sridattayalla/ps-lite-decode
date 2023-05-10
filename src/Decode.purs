@@ -8,10 +8,7 @@ import Type.Proxy (Proxy(..))
 import Type.RowList (class RowToList, RowList, Nil, Cons)
 import Foreign (Foreign)
 import Main.DecodeError (DecodedVal(..))
-import Data.Newtype (class Newtype, wrap)
 import Data.Maybe (Maybe, Maybe(Nothing), Maybe(..))
-
-foreign import decodeInternal :: Unit
 
 class DecodeFn a where
     internalDecode :: Foreign -> a
@@ -61,7 +58,7 @@ instance gDecodeJsonNil :: GDecodeJson () Nil where
 
 foreign import lookupVal :: Foreign -> String -> Foreign
 
-unsafeInsert' :: forall r1 r2 l a
+unsafeInsert :: forall r1 r2 l a
    . IsSymbol l
   => Lacks l r1
   => Cons l a r1 r2
@@ -69,9 +66,9 @@ unsafeInsert' :: forall r1 r2 l a
   -> a
   -> Record r1
   -> Record r2
-unsafeInsert' l a r = unsafeInsert (reflectSymbol l) a r
+unsafeInsert l a r = unsafeInsertImpl (reflectSymbol l) a r
 
-foreign import unsafeInsert :: forall a r1 r2. String -> a -> Record r1 -> Record r2
+foreign import unsafeInsertImpl :: forall a r1 r2. String -> a -> Record r1 -> Record r2
 
 instance gDecodeJsonCons ::
   ( DecodeFn value
@@ -87,12 +84,11 @@ instance gDecodeJsonCons ::
       symbol = reflectSymbol _field
     -- Todo not so good, move it to js to make this as lil overhead and as easy as possible
     -- recursion is happening here, make it a loop
-    unsafeInsert' _field (internalDecode $ lookupVal object symbol) (gDecodeJson object (Proxy :: Proxy tail))
-
---instance newTypeDecode :: (DecodeFn a) => DecodeFn (Newtype a) where
---    internalDecode = wrap <<< internalDecode
+    unsafeInsert _field (internalDecode $ lookupVal object symbol) (gDecodeJson object (Proxy :: Proxy tail))
 
 foreign import safeDecodeImpl :: forall a. Foreign -> (String -> DecodedVal a) -> (a -> DecodedVal a) -> (Foreign -> a) -> DecodedVal a
 
 safeDecode :: forall a. (DecodeFn a) => Foreign -> DecodedVal a
 safeDecode fn = safeDecodeImpl fn DecodeErr Val internalDecode
+
+foreign import throwErr :: forall a. String -> a

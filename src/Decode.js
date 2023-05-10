@@ -1,25 +1,3 @@
-export function decodeInternal(value_type) {
-    return function() {
-        let newJson = {}
-        var value =  {"yavfv":"yybodkm","nciv":false,"naz":true,"feqrv":9,"jtm":2,"bgenup":"lqe","vejj":48,"icyfmo":56,"wyp":11,"kwcm":33,"fivy":"fnbkwi","nwyy":95,"unbzopq":true,"taj":"iyzktj","ildgckd":true,"zrmedo":"eaczmd","ecl":29,"apsoy":9,"tmum":86,"kmwb":true,"mtyrc":19,"giowwec":"yzou","aazh":false,"ttmh":62,"ybrr":"iwi","ykbaag":false,"kil":true,"jjloe":19,"ywqo":true,"cypthbn":61}
-        try {
-            // let keys = Object.keys(value_type);
-            for(let i = 0 ; i < value_type.length; i++) {
-                if (value_type[i][1] != typeof value[value_type[i][0]])
-                {
-                    console.log(value_type[i][1], typeof value[value_type[i][0]])
-                    throw "type Mismatch";
-                } else {
-                    newJson[value_type[i][0]] = value[value_type[i][0]];
-                }
-            }
-        } catch(err) {
-            console.log(err)
-        }
-        return newJson;
-    }
-}
-
 export function decodeArr(fn){
     return function(fun){
         const ret = [];
@@ -36,16 +14,11 @@ export function lookupVal(fn){
     }
 }
 
-export function unsafeInsert(key){
+export function unsafeInsertImpl(key){
     return (val)=>{
         return (rec)=>{
-            try{
-                rec[key] = val
-                return rec
-            }
-            catch (e) {
-                return rec
-            }
+            rec[key] = val
+            return rec
         }
     }
 }
@@ -103,4 +76,8 @@ export function safeDecodeImpl(fn){
             }
         }
     }
+}
+
+export function throwErr(err){
+    throw new Error(err)
 }
