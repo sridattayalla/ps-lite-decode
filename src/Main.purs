@@ -64,22 +64,6 @@ val =
         DecodeErr x -> x
         Val (x :: Array BigType) -> show x
 
-foreign import carData :: Unit -> Foreign
-
-newtype Car = Car {wheels :: Int, fuelLevel :: Maybe Number}
-
-instance decodeCar :: DecodeFn Car where
-    internalDecode fn = Car (internalDecode fn)
-
-instance showCar :: Show Car where
-    show (Car x) = show x 
-    
-val' :: String
-val' =
-    case safeDecode (carData unit) :: DecodedVal Car of
-        DecodeErr x -> x
-        Val       x -> show x
-
 main = log $ ""--val
 
 

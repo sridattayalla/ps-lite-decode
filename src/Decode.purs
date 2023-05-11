@@ -9,46 +9,48 @@ import Type.RowList (class RowToList, RowList, Nil, Cons)
 import Foreign (Foreign)
 import Main.DecodeError (DecodedVal(..))
 import Data.Maybe (Maybe, Maybe(Nothing), Maybe(..))
+import Data.Either (Either(..))
 
 class DecodeFn a where
     internalDecode :: Foreign -> a
 
 foreign import decodeStrImpl :: Foreign -> String
+foreign import decodeIntImpl :: Foreign -> Int
+foreign import decodeNumImpl :: Foreign -> Number
+foreign import decodeBoolImpl :: Foreign -> Number
+foreign import decodeArr :: forall a. Foreign -> (Foreign -> a) -> Array a
+foreign import decodeMaybeImpl :: forall a. Foreign -> (Foreign -> a) -> (Maybe a) -> (_ -> Maybe a) -> Maybe a
 
 instance decodeString :: DecodeFn String where
     internalDecode = decodeStrImpl
 
-foreign import decodeIntImpl :: Foreign -> Int
-
-instance decodeInt :: DecodeFn Int where
+else instance decodeInt :: DecodeFn Int where
     internalDecode = decodeIntImpl 
 
-foreign import decodeNumImpl :: Foreign -> Number
-
-instance decodeNumber :: DecodeFn Number where
+else instance decodeNumber :: DecodeFn Number where
     internalDecode = decodeNumImpl
 
-foreign import decodeBoolImpl :: Foreign -> Number
-
-instance decodeBoolean :: DecodeFn Boolean where
+else instance decodeBoolean :: DecodeFn Boolean where
     internalDecode _ = true
 
-foreign import decodeArr :: forall a. Foreign -> (Foreign -> a) -> Array a
+else instance decodeArray :: DecodeFn a => DecodeFn (Array a) where
+    internalDecode obj = decodeArr obj internalDecode
 
-instance decodeArray :: DecodeFn a => DecodeFn (Array a) where
-    internalDecode fn = decodeArr fn internalDecode
+else instance decodeMaybe :: DecodeFn a => DecodeFn (Maybe a) where
+    internalDecode obj = decodeMaybeImpl obj internalDecode Nothing Just
 
-foreign import decodeMaybeImpl :: forall a. Foreign -> (Foreign -> a) -> (Maybe a) -> (_ -> Maybe a) -> Maybe a
-
-instance decodeMaybe :: DecodeFn a => DecodeFn (Maybe a) where
-    internalDecode fn = decodeMaybeImpl fn internalDecode Nothing Just
-
-instance decodeRecord ::
+else instance decodeRecord ::
   ( GDecodeJson row list
   , RowToList row list
   ) =>
   DecodeFn (Record row) where
   internalDecode json = gDecodeJson json (Proxy :: Proxy list)
+
+else instance decodeFn_ :: (LiteDecode a) => DecodeFn a where
+    internalDecode obj =
+        case liteDecode obj of
+            Right x   -> x
+            Left  err -> throwErr err
 
 class GDecodeJson (row :: Row Type) (list :: RowList Type) | list -> row where
   gDecodeJson :: forall proxy. Foreign -> proxy list -> (Record row)
@@ -89,6 +91,9 @@ instance gDecodeJsonCons ::
 foreign import safeDecodeImpl :: forall a. Foreign -> (String -> DecodedVal a) -> (a -> DecodedVal a) -> (Foreign -> a) -> DecodedVal a
 
 safeDecode :: forall a. (DecodeFn a) => Foreign -> DecodedVal a
-safeDecode fn = safeDecodeImpl fn DecodeErr Val internalDecode
+safeDecode obj = safeDecodeImpl obj DecodeErr Val internalDecode
 
 foreign import throwErr :: forall a. String -> a
+
+class LiteDecode a where
+    liteDecode :: Foreign -> Either String a
