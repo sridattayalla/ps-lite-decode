@@ -5,7 +5,7 @@ import Prelude
 import Data.Show (class Show)
 import Data.Array (tail, (:))
 import Foreign (Foreign)
-import Decode
+import LiteDecode.Decode
 import Main.DecodeError
 import Effect.Console (log)
 import Data.Newtype (wrap)

@@ -2,14 +2,14 @@
   This is a program to traverse a record and get the keys and types of the fields.
   Supports all primitive types like String, Int, Char, Number, Boolean along with nested Records and Arrays.
 -}
-module Main where
+module LiteDecode.Main where
 
 import Prelude
 
 import Data.Show (class Show)
 import Data.Array (tail, (:))
 import Foreign (Foreign)
-import Decode
+import LiteDecode.Decode
 import Main.DecodeError
 import Effect.Console (log)
 import Data.Newtype (wrap)

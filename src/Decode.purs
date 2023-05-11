@@ -1,4 +1,4 @@
-module Decode where
+module LiteDecode.Decode where
 
 import Prelude
 
