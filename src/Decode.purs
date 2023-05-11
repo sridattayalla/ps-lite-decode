@@ -10,6 +10,8 @@ import Foreign (Foreign)
 import Main.DecodeError (DecodedVal(..))
 import Data.Maybe (Maybe, Maybe(Nothing), Maybe(..))
 import Data.Either (Either(..))
+import Foreign.Generic.Class (class Decode, decode)
+import Control.Monad.Except (runExcept)
 
 class DecodeFn a where
     internalDecode :: Foreign -> a
@@ -25,7 +27,7 @@ instance decodeString :: DecodeFn String where
     internalDecode = decodeStrImpl
 
 else instance decodeInt :: DecodeFn Int where
-    internalDecode = decodeIntImpl 
+    internalDecode = decodeIntImpl
 
 else instance decodeNumber :: DecodeFn Number where
     internalDecode = decodeNumImpl
@@ -45,6 +47,12 @@ else instance decodeRecord ::
   ) =>
   DecodeFn (Record row) where
   internalDecode json = gDecodeJson json (Proxy :: Proxy list)
+
+else instance decodeFn__ :: (Decode a) => DecodeFn a where
+   internalDecode obj =
+       case runExcept $ decode obj of
+           Right x   -> x
+           Left  err -> throwErr "failed in foreign-generic decode"
 
 else instance decodeFn_ :: (LiteDecode a) => DecodeFn a where
     internalDecode obj =

@@ -78,3 +78,13 @@ instance convertNumber :: Convert Int Number where
     convert _ = 0.0
 
 temp = convert ""
+
+
+type Whole = Part (extra :: Int)
+
+type Part a = {
+    something :: String
+    | a
+}
+
+test = safeDecode (movieData unit) :: DecodedVal Whole
