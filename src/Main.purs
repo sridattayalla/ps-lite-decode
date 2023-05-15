@@ -2,7 +2,7 @@
   This is a program to traverse a record and get the keys and types of the fields.
   Supports all primitive types like String, Int, Char, Number, Boolean along with nested Records and Arrays.
 -}
-module LiteDecode.Main where
+module Main where
 
 import Prelude
 
@@ -65,26 +65,3 @@ val =
         Val (x :: Array BigType) -> show x
 
 main = log $ ""--val
-
-
------------------------
-class Convert a b | a -> b where
-    convert :: a -> b
-
-instance convertStringInt :: Convert String Int where
-    convert _ = 0
-
-instance convertNumber :: Convert Int Number where
-    convert _ = 0.0
-
-temp = convert ""
-
-
-type Whole = Part (extra :: Int)
-
-type Part a = {
-    something :: String
-    | a
-}
-
-test = safeDecode (movieData unit) :: DecodedVal Whole

@@ -30,6 +30,22 @@ export function decodeStrImpl(fn){
     throw new Error("")
 }
 
+export function decodeStrChain(obj){
+    return (success)=>{
+        return (failure)=>{
+            try {
+                if (typeof obj === "string") {
+                    return success(obj);
+                }
+            }
+            catch (e) {
+                return failure("error while decoding string")
+            }
+            return failure("type is not string")
+        }
+    }
+}
+
 export function decodeIntImpl(fn){
     if(typeof fn === "number"){
         return fn
@@ -81,3 +97,5 @@ export function safeDecodeImpl(fn){
 export function throwErr(err){
     throw new Error(err)
 }
+
+export const emptyRecord = {}
