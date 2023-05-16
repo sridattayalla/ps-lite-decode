@@ -21,7 +21,7 @@ import Control.Monad.Except (runExcept)
 import Data.Either (Either(..))
 import Types (BigType)
 import Type.Proxy (Proxy)
-import Chain (decodeForeign)
+import Chain (decodeForeign, decodeString)
  
 foreign import movieData :: Unit -> Foreign
 foreign import startProfile :: Unit -> Unit
@@ -30,7 +30,7 @@ foreign import endProfile :: Unit -> Unit
 --getMovieData :: Either (Array Movie)
 getMovieData = let
     _ = startProfile unit
-    val = decodeForeign (movieData unit)
+    val = decodeString "[{\"cast\":[\"asdf\",\"123\"],\"title\":\"afg\",\"year\":2020,\"rating\":7.3,\"reviews\":{\"count\":10}}]"
     _ = endProfile unit
     in val
 
@@ -47,4 +47,4 @@ val =
         DecodeErr x -> x
         Val (x :: Array BigType) -> show x
 
-main = log $ ""--val
+main = log $ val

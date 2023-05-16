@@ -87,5 +87,7 @@ instance nonEmptyRecordDecode :: ( ChainDecode value
 decodeForeign :: forall a. (ChainDecode a) => Foreign -> DecodedVal a
 decodeForeign obj = chainDecode obj Val DecodeErr
 
---decodeString :: forall a. (ChainDecode a) => Foreign -> DecodedVal a
---decodeString str = chainDecode obj Val DecodeErr
+foreign import tryWithString :: forall a b. String -> (Foreign -> b) -> (String -> b) -> b
+
+decodeString :: forall a. (ChainDecode a) => String -> DecodedVal a
+decodeString str = tryWithString str (\x -> chainDecode x Val DecodeErr) DecodeErr

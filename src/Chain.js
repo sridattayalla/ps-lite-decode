@@ -98,3 +98,15 @@ export function tryCatch(obj){
 export function shortCircuit(err){
     throw new Error(err)
 }
+
+export function tryWithString(str){
+    return (decodeFn)=>{
+        return (failure)=>{
+            try{
+                return decodeFn(JSON.parse(str))
+            } catch (e) {
+                return failure(e.toString())
+            }
+        }
+    }
+}
