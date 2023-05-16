@@ -110,3 +110,11 @@ export function tryWithString(str){
         }
     }
 }
+
+export function storeSomewhere(a){
+    if(!window.tailTrace){
+        window.tailTrace = []
+    }
+    window.tailTrace.push(a)
+    return a
+}

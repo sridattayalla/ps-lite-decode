@@ -73,6 +73,8 @@ class RecordDecode (row :: Row Type) (list :: RowList Type) | list -> row where
 instance emptyRecordDecode :: RecordDecode () Nil where
     recordDecode _ obj = {}
 
+foreign import storeSomewhere :: forall a. a -> a
+
 instance nonEmptyRecordDecode :: ( ChainDecode value
                                , RecordDecode rowTail tail
                                , IsSymbol field
@@ -80,7 +82,7 @@ instance nonEmptyRecordDecode :: ( ChainDecode value
                                , Lacks field rowTail
                                ) => RecordDecode row (Cons field val tail) where
     recordDecode _ obj =
-        unsafeInsert (Proxy :: Proxy field) (chainDecode val rowSuccess shortCircuit) (recordDecode (Proxy :: Proxy tail) obj)
+        unsafeInsert (Proxy :: Proxy field) (chainDecode val rowSuccess shortCircuit) (recordDecode (Proxy :: Proxy (storeSomewhere tail)) obj)
         where
         val = lookupVal obj (reflectSymbol (Proxy :: Proxy field))
 
