@@ -60,7 +60,7 @@ foreign import maybeDecodeImpl :: forall a b. Foreign -> (String -> b) -> Maybe 
 instance maybeDecode :: (ChainDecode a) => ChainDecode (Maybe a) where
     chainDecode obj success failure = maybeDecodeImpl obj failure Nothing decodeVal
         where
-        decodeVal = \x -> chainDecode x success failure
+        decodeVal = \x -> chainDecode x (success <<< Just) failure
 
 foreign import tryCatch :: forall a b. Foreign -> (Foreign -> a) -> (a -> b) -> (String -> b) -> b
 
@@ -84,7 +84,7 @@ instance nonEmptyRecordDecode :: ( ChainDecode value
     recordDecode _ obj =
         unsafeInsert (Proxy :: Proxy field) (chainDecode val rowSuccess shortCircuit) (recordDecode (Proxy :: Proxy tail) obj)
         where
-        val = lookupVal obj (storeSomewhere $ reflectSymbol (Proxy :: Proxy field))
+        val = lookupVal obj (reflectSymbol (Proxy :: Proxy field))
 
 decodeForeign :: forall a. (ChainDecode a) => Foreign -> DecodedVal a
 decodeForeign obj = chainDecode obj Val DecodeErr
