@@ -24,9 +24,6 @@ data Cast = Actor String | Director String | Musician String
 
 foreign import stringify :: Foreign -> String
 
-instance castDecode :: LiteDecode Cast where
-    liteDecode fn = Right $ Actor (stringify fn)
-
 derive instance genericCast :: Generic Cast _
 
 instance castDecodeForeign :: Decode Cast where

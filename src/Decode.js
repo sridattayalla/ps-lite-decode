@@ -97,5 +97,3 @@ export function safeDecodeImpl(fn){
 export function throwErr(err){
     throw new Error(err)
 }
-
-export const emptyRecord = {}
