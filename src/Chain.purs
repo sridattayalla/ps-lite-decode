@@ -42,7 +42,7 @@ instance foreignDecode :: ChainDecode Foreign where
 
 instance objectDecode :: (ChainDecode a) => ChainDecode (Object a) where
     chainDecode obj success failure = if isObject obj
-        then success $ Object.mapWithKey (\_ -> (\x -> chainDecode x rowSuccess shortCircuit)) (unsafeFromForeign obj)
+        then tryCatch obj (\frn -> Object.mapWithKey (\_ -> (\x -> chainDecode x rowSuccess shortCircuit)) (unsafeFromForeign frn)) success failure
         else failure "not an object"
 
 foreign import arrDecodeImpl :: forall a b c. Foreign -> (Foreign -> a) -> (Array a -> c) -> (String -> c) -> c
