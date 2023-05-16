@@ -13,6 +13,7 @@ import Foreign.Object (Object)
 import Data.Traversable (sequence)
 import Foreign.Object (mapWithKey) as Object
 import Foreign.Generic.Internal (isObject)
+import Data.Newtype (class Newtype, wrap)
 
 class ChainDecode a where
     chainDecode :: forall b. Foreign -> (a -> b) -> (String -> b) -> b
@@ -93,3 +94,8 @@ foreign import tryWithString :: forall a b. String -> (Foreign -> b) -> (String 
 
 decodeString :: forall a. (ChainDecode a) => String -> DecodedVal a
 decodeString str = tryWithString str (\x -> chainDecode x Val DecodeErr) DecodeErr
+
+
+wrapDecode :: forall a b c. (Newtype b a) => DecodedVal a -> (b -> c) -> (String -> c) -> c
+wrapDecode (DecodeErr err) _ failure = failure err
+wrapDecode (Val val) success _       = success $ wrap val

@@ -45,6 +45,7 @@ to generate this file without the comments in this block.
   , "typelevel-prelude"
   , "web-dom"
   , "web-html"
+              , "debug"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

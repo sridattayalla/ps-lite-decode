@@ -30,7 +30,7 @@ foreign import endProfile :: Unit -> Unit
 --getMovieData :: Either (Array Movie)
 getMovieData = let
     _ = startProfile unit
-    val = decodeString "[{\"cast\":[\"asdf\",\"123\"],\"title\":\"afg\",\"year\":2020,\"rating\":7.3,\"reviews\":{\"count\":10}}]"
+    val = decodeString "[{\"id\": 10, \"cast\":[\"asdf\",\"123\"],\"title\":\"afg\",\"year\":2020,\"rating\":7.3,\"reviews\":{\"count\":10}}]"
     _ = endProfile unit
     in val
 
