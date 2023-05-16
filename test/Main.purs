@@ -21,24 +21,7 @@ import Control.Monad.Except (runExcept)
 import Data.Either (Either(..))
 import Types (BigType)
 import Type.Proxy (Proxy)
-
---type Movie = {id :: Maybe Int, title :: String, rating :: Number, year :: Int, cast :: Array Cast, reviews:: {count :: Int, user :: Array User}}
---
---type User = {name :: String, likedMovies :: Array {id :: Int}}
---
---data Cast = Actor String | Director String | Musician String
---
---foreign import stringify :: Foreign -> String
---
---instance castDecode :: DecodeFn Cast where
---    internalDecode fn = Actor (stringify fn)
---
---instance showCast :: Show Cast where
---    show c =
---        case c of
---            Actor a -> "Actor " <> a
---            Director d -> "Director " <> d
---            Musician m -> "Musician " <> m
+import Chain (decodeForeign)
  
 foreign import movieData :: Unit -> Foreign
 foreign import startProfile :: Unit -> Unit
@@ -47,10 +30,10 @@ foreign import endProfile :: Unit -> Unit
 --getMovieData :: Either (Array Movie)
 getMovieData = let
     _ = startProfile unit
-    val = safeDecode (movieData unit)
+    val = decodeForeign (movieData unit)
     _ = endProfile unit
     in val
-    
+
 --
 --val :: String
 --val =

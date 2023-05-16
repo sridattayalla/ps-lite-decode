@@ -6,7 +6,7 @@ export function stringify(fn){
 
 export function movieData(){
     var x = []
-    for(var i=0 ;i<1000; i++){
+    for(var i=0 ;i<10000; i++){
         x.push({cast : ["asdf", "123"], title : "afg", year: 2020, rating: 7.3, reviews : {count: 10}})
     }
     return x;
