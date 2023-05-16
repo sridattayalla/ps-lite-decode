@@ -33,6 +33,9 @@ foreign import bitDecodeImpl :: forall b. Foreign -> (Boolean -> b) -> (String -
 instance bitDecode :: ChainDecode Boolean where
     chainDecode = bitDecodeImpl
 
+instance foreignDecode :: ChainDecode Foreign where
+    chainDecode obj success _ = success obj
+
 foreign import arrDecodeImpl :: forall a b c. Foreign -> (Foreign -> a) -> (Array a -> c) -> (String -> c) -> c
 
 foreign import shortCircuit :: forall a. String -> a
@@ -74,3 +77,6 @@ instance nonEmptyRecordDecode :: ( ChainDecode value
 
 decodeForeign :: forall a. (ChainDecode a) => Foreign -> DecodedVal a
 decodeForeign obj = chainDecode obj Val DecodeErr
+
+--decodeString :: forall a. (ChainDecode a) => Foreign -> DecodedVal a
+--decodeString str = chainDecode obj Val DecodeErr
