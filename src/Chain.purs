@@ -96,6 +96,7 @@ decodeString :: forall a. (ChainDecode a) => String -> DecodedVal a
 decodeString str = tryWithString str (\x -> chainDecode x Val DecodeErr) DecodeErr
 
 
-wrapDecode :: forall a b c. (Newtype b a) => DecodedVal a -> (b -> c) -> (String -> c) -> c
-wrapDecode (DecodeErr err) _ failure = failure err
-wrapDecode (Val val) success _       = success $ wrap val
+wrapDecode :: forall a b c. (Newtype b a) => (ChainDecode a) => Foreign -> (b -> c) -> (String -> c) -> c
+wrapDecode obj success failure = case decodeForeign obj :: DecodedVal a of
+    DecodeErr err -> failure err
+    Val       val -> success $ wrap val
