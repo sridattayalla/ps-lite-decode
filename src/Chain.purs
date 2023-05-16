@@ -82,9 +82,9 @@ instance nonEmptyRecordDecode :: ( ChainDecode value
                                , Lacks field rowTail
                                ) => RecordDecode row (Cons field val tail) where
     recordDecode _ obj =
-        unsafeInsert (Proxy :: Proxy field) (chainDecode val rowSuccess shortCircuit) (recordDecode (Proxy :: Proxy (storeSomewhere tail)) obj)
+        unsafeInsert (Proxy :: Proxy field) (chainDecode val rowSuccess shortCircuit) (recordDecode (Proxy :: Proxy tail) obj)
         where
-        val = lookupVal obj (reflectSymbol (Proxy :: Proxy field))
+        val = lookupVal obj (storeSomewhere $ reflectSymbol (Proxy :: Proxy field))
 
 decodeForeign :: forall a. (ChainDecode a) => Foreign -> DecodedVal a
 decodeForeign obj = chainDecode obj Val DecodeErr
