@@ -1,7 +1,7 @@
 module Chain where
 
 import Prelude
-import Foreign (Foreign)
+import Foreign (Foreign, unsafeFromForeign)
 import Type.RowList (class RowToList, RowList, Nil, Cons)
 import Type.Proxy (Proxy(Proxy))
 import LiteDecode.Decode (lookupVal, unsafeInsert)
@@ -9,6 +9,10 @@ import Data.Symbol (class IsSymbol, reflectSymbol)
 import Prim.Row (class Cons, class Lacks)
 import Data.Maybe (Maybe, Maybe(Just), Maybe(Nothing))
 import Main.DecodeError (DecodedVal, DecodedVal(Val), DecodedVal(DecodeErr))
+import Foreign.Object (Object)
+import Data.Traversable (sequence)
+import Foreign.Object (mapWithKey) as Object
+import Foreign.Generic.Internal (isObject)
 
 class ChainDecode a where
     chainDecode :: forall b. Foreign -> (a -> b) -> (String -> b) -> b
@@ -35,6 +39,11 @@ instance bitDecode :: ChainDecode Boolean where
 
 instance foreignDecode :: ChainDecode Foreign where
     chainDecode obj success _ = success obj
+
+instance objectDecode :: (ChainDecode a) => ChainDecode (Object a) where
+    chainDecode obj success failure = if isObject obj
+        then success $ Object.mapWithKey (\_ -> (\x -> chainDecode x rowSuccess shortCircuit)) (unsafeFromForeign obj)
+        else failure "not an object"
 
 foreign import arrDecodeImpl :: forall a b c. Foreign -> (Foreign -> a) -> (Array a -> c) -> (String -> c) -> c
 
