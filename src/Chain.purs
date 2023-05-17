@@ -10,7 +10,6 @@ import Prim.Row (class Cons, class Lacks)
 import Data.Maybe (Maybe, Maybe(Just), Maybe(Nothing))
 import Main.DecodeError (DecodedVal, DecodedVal(Val), DecodedVal(DecodeErr))
 import Foreign.Object (Object)
-import Data.Traversable (sequence)
 import Foreign.Object (mapWithKey) as Object
 import Foreign.Generic.Internal (isObject)
 import Data.Newtype (class Newtype, wrap)
@@ -100,3 +99,8 @@ wrapDecode :: forall a b c. (Newtype b a) => (ChainDecode a) => Foreign -> (b ->
 wrapDecode obj success failure = case decodeForeign obj :: DecodedVal a of
     DecodeErr err -> failure err
     Val       val -> success $ wrap val
+
+constructorDecode :: forall a b c. (ChainDecode a) => (a -> b) -> Foreign -> (b -> c) -> (String -> c) -> c
+constructorDecode l obj success failure = case decodeForeign obj :: DecodedVal a of
+    DecodeErr err -> failure err
+    Val       val -> success $ l val
