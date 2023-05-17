@@ -1,9 +1,5 @@
-export function stringDecodeImpl(obj){
-    return (success)=>{
-        return (failure)=>{
-            return primitiveDecodeImpl(obj, "string", success, failure)
-        }
-    }
+export function stringDecodeImpl(obj, success, failure){
+    return primitiveDecodeImpl(obj, "string", success, failure)
 }
 
 export function intDecodeImpl(obj){

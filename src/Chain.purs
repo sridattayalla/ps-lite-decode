@@ -13,14 +13,15 @@ import Foreign.Object (Object)
 import Foreign.Object (mapWithKey) as Object
 import Foreign.Generic.Internal (isObject)
 import Data.Newtype (class Newtype, wrap)
+import Data.Function.Uncurried (Fn3, runFn3)
 
 class ChainDecode a where
     chainDecode :: forall b. Foreign -> (a -> b) -> (String -> b) -> b
 
-foreign import stringDecodeImpl :: forall b. Foreign -> (String -> b) -> (String -> b) -> b
+foreign import stringDecodeImpl :: forall b. Fn3 Foreign  (String -> b)  (String -> b) b
 
 instance stringDecode :: ChainDecode String where
-    chainDecode = stringDecodeImpl
+    chainDecode = runFn3 stringDecodeImpl
 
 foreign import intDecodeImpl :: forall b. Foreign -> (Int -> b) -> (String -> b) -> b
 

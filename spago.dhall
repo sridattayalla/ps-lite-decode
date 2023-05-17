@@ -47,6 +47,7 @@ to generate this file without the comments in this block.
   , "web-html"
               , "debug"
               , "control"
+              , "functions"
   ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

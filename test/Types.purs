@@ -25,11 +25,11 @@ data Cast = Actor String | Director String | Musician String
 
 foreign import stringify :: Foreign -> String
 
---derive instance genericCast :: Generic Cast _
+derive instance genericCast :: Generic Cast _
 --
---instance castDecodeForeign :: Decode Cast where
---    decode fn = do
---        pure $ Actor (stringify fn)
+instance castDecodeForeign :: Decode Cast where
+    decode fn = do
+        pure $ Actor (stringify fn)
 
 instance castChainDecode :: ChainDecode Cast where
     chainDecode obj success failure = success (Actor "")
