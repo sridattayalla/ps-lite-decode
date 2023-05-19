@@ -117,7 +117,7 @@ export function storeSomewhere(a){
 
 var timeTaken = 0;
 
-window.recordTime = {}
+window.recordTime = []
 
 export function startProfile(){
     timeTaken = performance.now()
