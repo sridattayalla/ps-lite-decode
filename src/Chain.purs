@@ -15,6 +15,9 @@ import Foreign.Generic.Internal (isObject)
 import Data.Newtype (class Newtype, wrap)
 import Data.Function.Uncurried (Fn3, runFn3)
 
+foreign import startProfile :: Unit -> Unit
+foreign import endProfile :: String -> Unit
+
 class ChainDecode a where
     chainDecode :: forall b. Foreign -> (a -> b) -> (String -> b) -> b
 
@@ -83,9 +86,15 @@ instance nonEmptyRecordDecode :: ( ChainDecode value
                                , Lacks field rowTail
                                ) => RecordDecode row (Cons field val tail) where
     recordDecode _ obj =
-        unsafeInsert (Proxy :: Proxy field) (chainDecode val rowSuccess shortCircuit) (recordDecode (Proxy :: Proxy tail) obj)
+        unsafeInsert (Proxy :: Proxy field) decodeFn (recordDecode (Proxy :: Proxy tail) obj)
         where
         val = lookupVal obj (reflectSymbol (Proxy :: Proxy field))
+        decodeFn = let
+            x = startProfile unit
+            val' = (chainDecode val rowSuccess shortCircuit)
+            _ = endProfile (reflectSymbol (Proxy :: Proxy field))
+            in val'
+            
 
 decodeForeign :: forall a. (ChainDecode a) => Foreign -> DecodedVal a
 decodeForeign obj = chainDecode obj Val DecodeErr

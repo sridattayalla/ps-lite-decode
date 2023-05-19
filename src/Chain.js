@@ -114,3 +114,16 @@ export function storeSomewhere(a){
     // window.tailTrace.push(a)
     return a
 }
+
+var timeTaken = 0;
+
+export function startProfile(){
+    timeTaken = performance.now()
+}
+
+export function endProfile(x){
+    if(window.logIt){
+        var val = performance.now() - timeTaken;
+        console.log(x, val)
+    }
+}

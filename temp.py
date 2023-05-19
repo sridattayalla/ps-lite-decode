@@ -1,6 +1,29 @@
-r = """Let FromLet [ValueDeclaration (ValueDeclarationData {valdeclSourceAnn = (SourceSpan {spanName = "src/Main.purs", spanStart = SourcePos {sourcePosLine = 6, sourcePosColumn = 1}, spanEnd = SourcePos {sourcePosLine = 6, sourcePosColumn = 21}},[]), valdeclIdent = GenIdent Nothing 0, valdeclName = Public, valdeclBinders = [], valdeclExpression = [GuardedExpr [] (PositionedValue (SourceSpan {spanName = "src/Main.purs", spanStart = SourcePos {sourcePosLine = 6, sourcePosColumn = 10}, spanEnd = SourcePos {sourcePosLine = 6, sourcePosColumn = 11}}) [] (Var (SourceSpan {spanName = "src/Main.purs", spanStart = SourcePos {sourcePosLine = 6, sourcePosColumn = 10}, spanEnd = SourcePos {sourcePosLine = 6, sourcePosColumn = 11}}) (Qualified (BySourcePos (SourcePos {sourcePosLine = 0, sourcePosColumn = 0})) (Ident "v"))))]})] (ObjectUpdate (Var (SourceSpan {spanName = "", spanStart = SourcePos {sourcePosLine = 0, sourcePosColumn = 0}, spanEnd = SourcePos {sourcePosLine = 0, sourcePosColumn = 0}}) (Qualified (BySourcePos (SourcePos {sourcePosLine = 0, sourcePosColumn = 0})) (GenIdent Nothing 0))) [("a",PositionedValue (SourceSpan {spanName = "src/Main.purs", spanStart = SourcePos {sourcePosLine = 6, sourcePosColumn = 18}, spanEnd = SourcePos {sourcePosLine = 6, sourcePosColumn = 20}}) [] (Literal (SourceSpan {spanName = "src/Main.purs", spanStart = SourcePos {sourcePosLine = 6, sourcePosColumn = 18}, spanEnd = SourcePos {sourcePosLine = 6, sourcePosColumn = 20}}) (NumericLiteral (Left 41))))])"""
+import re
 
-r = r.replace("]", "]\n")
-r = r.replace(")", ")\n")
+filename = "example.txt"
 
-print(r)
+# Read the contents of the file
+with open(filename, 'r') as file:
+    file_contents = file.read()
+    lines = file_contents.splitlines()
+
+decode_matches = re.findall(r":: Decode (.*?) ", file_contents)
+chain_matches = re.findall(r":: ChainDecode (.*?) ", file_contents)
+
+decodes = []
+
+for each in decode_matches:
+    if each not in chain_matches:
+        decodes.append("instance chainDecode"+each + " :: ChainDecode " + each +" where chainDecode = wrapDecode")
+
+import_matches = re.findall(r"import .*", file_contents)
+chain_import = re.findall(r"import Chain.*", file_contents)
+decodearr_import = re.findall(r"import Main.Dec.*", file_contents)
+
+print(lines)
+
+lines = lines[:len(import_matches)] + ([] if len(chain_import) > 0 else ["import Chain"]) + ([] if len(decodearr_import) > 0 else ["import Main.DecodeError"]) + [""] + lines[len(import_matches):]
+
+# Write the modified contents back to the file
+with open(filename, 'w') as file:
+    file.write("\n".join(lines) + "\n\n" + "\n".join(decodes))

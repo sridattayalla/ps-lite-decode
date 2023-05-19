@@ -1,0 +1,6 @@
+import Chain
+import Main.DecodeError
+
+instanfe some :: Decode Bring where
+
+instance chainDecodeBring :: ChainDecode Bring where chainDecode = wrapDecode
